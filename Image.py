@@ -14,6 +14,7 @@ from tensorflow.keras.optimizers import Adam
 
 i = 0
 last = []
+labels = []
 images = []
 ageList = []
 sexList = []
@@ -25,31 +26,43 @@ class Image:
         for filename in os.listdir(folder):
             img = cv2.imread(os.path.join(folder, filename))
             if img is not None:
-                labels = self.establishLabels(filename)
+                label = self.establishLabels(filename)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = cv2.resize(img, (48, 48))
                 images.append(img)
-                sexList.append(labels['sex'])
-                ageList.append(labels['age'])
+                sexList.append(label[0])
+                ageList.append(label[1])
 
-        self.showProcessedImage(23)
+                labels.append(label)
 
-        # convert the labels and images to NumPy arraysd
+        #self.showProcessedImage(23)
+
+        # convert the labels and images to NumPy arrays
 
         images_f = np.array(images)
         sexList_f = np.array(sexList)
         ageList_f = np.array(ageList)
+        labels_f = np.array(labels)
 
         np.save(folder + 'image.npy', images_f)
         np.save(folder + 'gender.npy', sexList_f)
         np.save(folder + 'age.npy', ageList_f)
 
-        self.showSexDistribution(sexList_f)
-        self.showAgeDistribution(ageList_f)
+        #self.showSexDistribution(sexList_f)
+        #self.showAgeDistribution(ageList_f)
 
-        # images_f_2 = images_f / 255
-        # sexList_encoded = tf.keras.utils.to_categorical(sexList_f, num_classes=2)
-        # X_train, X_test, Y_train, Y_test = train_test_split(images_f_2, sexList_encoded, test_size=0.25)
+        # normalise the images array by dividing it with 255
+
+        images_f_2 = images_f / 255
+        X_train, X_test, Y_train, Y_test = train_test_split(images_f_2, labels_f, test_size=0.25)
+        Y_train[0:5]
+
+        Y_train_2 = [Y_train[:, 1], Y_train[:, 0]]
+        Y_test_2 = [Y_test[:, 1], Y_test[:, 0]]
+
+        Y_train_2[0][0:5]
+
+        Y_train_2[1][0:5]
 
         #History = self.trainModel(X_train, X_test, Y_train, Y_test)
         #print(History)
@@ -64,7 +77,8 @@ class Image:
         splitName = name.split("A")
         s = int(splitName[-1])
         a = int(splitName[-2])
-        output = {'sex': s, 'age': a}
+        #output = {'sex': s, 'age': a}
+        output = [s, a]
 
         return output
 
@@ -117,11 +131,14 @@ class Image:
         conv_4 = self.Convolution(maxp_3, 256)
         maxp_4 = MaxPooling2D(pool_size=(2, 2))(conv_4)
         flatten = Flatten()(maxp_4)
-        dense_1 = Dense(128, activation='relu')(flatten)
+        dense_1 = Dense(64, activation='relu')(flatten)
+        dense_2 = Dense(64, activation='relu')(flatten)
         drop_1 = Dropout(0.2)(dense_1)
-        output = Dense(7, activation="sigmoid")(drop_1)
-        model = Model(inputs=[inputs], outputs=[output])
-        model.compile(loss="categorical_crossentropy", optimizer="Adam",
+        drop_2 = Dropout(0.2)(dense_2)
+        output_1 = Dense(1, activation="sigmoid", name='sex_out')(drop_1)
+        output_2 = Dense(1, activation="relu", name='age_out')(drop_2)
+        model = Model(inputs=[inputs], outputs=[output_1, output_2])
+        model.compile(loss=["binary_crossentropy", "mae"], optimizer="Adam",
                       metrics=["accuracy"])
         return model
 
