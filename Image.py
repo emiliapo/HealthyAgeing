@@ -14,7 +14,7 @@ from tensorflow.keras.optimizers import Adam
 i = 0
 last = []
 images = []
-age = []
+ageList = []
 sexList = []
 
 
@@ -29,21 +29,27 @@ class Image:
                 img = cv2.resize(img, (48, 48))
                 images.append(img)
                 sexList.append(labels['sex'])
+                ageList.append(labels['age'])
+
+        cv2.imshow("Image2", images[2])
+        print(ageList[2])
+        print(sexList[2])
+        cv2.waitKey(0) #waits for any key press
 
         # convert the labels and images to NumPy arrays and normalise the images array
         # by dividing it with 255
 
-        images_f = np.array(images)
-        sexList_f = np.array(sexList)
-        images_f_2 = images_f / 255
-        sexList_encoded = tf.keras.utils.to_categorical(sexList_f, num_classes=2)
-        X_train, X_test, Y_train, Y_test = train_test_split(images_f_2, sexList_encoded, test_size=0.25)
+        # images_f = np.array(images)
+        # sexList_f = np.array(sexList)
+        # images_f_2 = images_f / 255
+        # sexList_encoded = tf.keras.utils.to_categorical(sexList_f, num_classes=2)
+        # X_train, X_test, Y_train, Y_test = train_test_split(images_f_2, sexList_encoded, test_size=0.25)
 
         #History = self.trainModel(X_train, X_test, Y_train, Y_test)
         #print(History)
 
-        Pred = Model.predict(self, X_test)
-        print(Pred)
+        # Pred = Model.predict(self, X_test)
+        # print(Pred)
 
 
 
