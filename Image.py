@@ -64,6 +64,9 @@ class Image:
 
         Y_train_2[1][0:5]
 
+        Model = self.model((48, 48, 3))
+        print(Model.summary())
+
         #History = self.trainModel(X_train, X_test, Y_train, Y_test)
         #print(History)
 
@@ -143,6 +146,8 @@ class Image:
         return model
 
     def trainModel(self, X_train, X_test, Y_train, Y_test):
+        # Model = self.model((48, 48, 3))
+        # print(Model.summary())
         History = Model.fit(X_train, Y_train,
                  batch_size=32,
                  validation_data=(X_test, Y_test),
