@@ -32,12 +32,9 @@ class Image:
                 sexList.append(labels['sex'])
                 ageList.append(labels['age'])
 
-        # cv2.imshow("Image2", images[2])
-        # print(ageList[2])
-        # print(sexList[2])
-        # cv2.waitKey(0) #waits for any key press
+        self.showProcessedImage(23)
 
-        # convert the labels and images to NumPy arrays
+        # convert the labels and images to NumPy arraysd
 
         images_f = np.array(images)
         sexList_f = np.array(sexList)
@@ -70,6 +67,15 @@ class Image:
         output = {'sex': s, 'age': a}
 
         return output
+
+    def showProcessedImage(self, index):
+
+        cv2.imshow("ProcessedImage", images[index])
+        print(ageList[index])
+        print(sexList[index])
+
+        print("Press any key to exit...")
+        cv2.waitKey(0) #waits for any key press
 
     def showSexDistribution(self, sexList_f):
         values, counts = np.unique(sexList_f, return_counts=True)
