@@ -1,5 +1,6 @@
 import cv2
 import os
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -31,16 +32,24 @@ class Image:
                 sexList.append(labels['sex'])
                 ageList.append(labels['age'])
 
-        cv2.imshow("Image2", images[2])
-        print(ageList[2])
-        print(sexList[2])
-        cv2.waitKey(0) #waits for any key press
+        # cv2.imshow("Image2", images[2])
+        # print(ageList[2])
+        # print(sexList[2])
+        # cv2.waitKey(0) #waits for any key press
 
-        # convert the labels and images to NumPy arrays and normalise the images array
-        # by dividing it with 255
+        # convert the labels and images to NumPy arrays
 
-        # images_f = np.array(images)
-        # sexList_f = np.array(sexList)
+        images_f = np.array(images)
+        sexList_f = np.array(sexList)
+        ageList_f = np.array(ageList)
+
+        np.save(folder + 'image.npy', images_f)
+        np.save(folder + 'gender.npy', sexList_f)
+        np.save(folder + 'age.npy', ageList_f)
+
+        self.showSexDistribution(sexList_f)
+        self.showAgeDistribution(ageList_f)
+
         # images_f_2 = images_f / 255
         # sexList_encoded = tf.keras.utils.to_categorical(sexList_f, num_classes=2)
         # X_train, X_test, Y_train, Y_test = train_test_split(images_f_2, sexList_encoded, test_size=0.25)
@@ -61,6 +70,26 @@ class Image:
         output = {'sex': s, 'age': a}
 
         return output
+
+    def showSexDistribution(self, sexList_f):
+        values, counts = np.unique(sexList_f, return_counts=True)
+        #print(counts) #returns 207, 219
+
+        plt.xlabel("Sex")
+        plt.ylabel("Distribution")
+        sex = ['Female', 'Male']
+        plt.bar(sex, counts)
+        plt.show()
+
+
+    def showAgeDistribution(self, ageList_f):
+        values, counts = np.unique(ageList_f, return_counts=True)
+        #print(counts)
+
+        plt.plot(values, counts)
+        plt.xlabel('ages')
+        plt.ylabel('distribution')
+        plt.show()
 
     def Convolution(self, input_tensor, filters):
         x = Conv2D(filters=filters, kernel_size=(3, 3), padding='same', strides=(1, 1), kernel_regularizer=l2(0.001))(
