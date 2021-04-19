@@ -140,6 +140,7 @@ class Image:
         drop_2 = Dropout(0.2)(dense_2)
         output_1 = Dense(1, activation="sigmoid", name='sex_out')(drop_1)
         output_2 = Dense(1, activation="relu", name='age_out')(drop_2)
+
         model = Model(inputs=[inputs], outputs=[output_1, output_2])
         model.compile(loss=["binary_crossentropy", "mae"], optimizer="Adam",
                       metrics=["accuracy"])
